@@ -1,154 +1,188 @@
 <template>
   <v-app>
-    <!-- Enhanced Header with Search -->
+    <!-- Header -->
     <v-app-bar
       app
-      color="primary"
-      dark
-      elevation="2"
-      height="72"
+      elevation="1"
+      height="70"
+      color="surface"
     >
-      <v-app-bar-nav-icon
-        v-if="$vuetify.display.mobile"
-        @click="drawer = !drawer"
-      ></v-app-bar-nav-icon>
-      
-      <v-toolbar-title class="d-flex align-center">
-        <v-icon size="28" class="mr-2">mdi-doctor</v-icon>
-        <span class="text-body-1 font-weight-medium d-none d-sm-inline">سیستم رزرو وقت دکتر</span>
-        <span class="text-body-2 d-sm-none">رزرو وقت</span>
-      </v-toolbar-title>
+      <v-container class="d-flex align-center" fluid>
+        <!-- Logo -->
+        <router-link to="/" class="d-flex align-center text-decoration-none">
+          <v-icon size="28" color="primary" class="ml-2">mdi-hospital</v-icon>
+          <div>
+            <div class="text-subtitle-1 font-weight-bold text-primary">سیستم رزرو وقت</div>
+            <div class="text-caption text-medium-emphasis">پزشک آنلاین</div>
+          </div>
+        </router-link>
 
-      <!-- Search Bar in Navbar -->
-      <v-spacer></v-spacer>
-      <div class="d-none d-md-flex align-center" style="max-width: 400px; width: 100%;">
-        <v-text-field
-          v-model="searchQuery"
-          prepend-inner-icon="mdi-magnify"
-          placeholder="پزشک یا تخصص را جستجو کنید..."
-          variant="solo-filled"
-          density="compact"
-          hide-details
-          clearable
-          flat
-          class="navbar-search"
-        ></v-text-field>
-      </div>
+        <v-spacer></v-spacer>
 
-      <v-spacer v-if="!$vuetify.display.mdAndUp"></v-spacer>
+        <!-- Navigation -->
+        <div class="d-none d-md-flex align-center" style="gap: 8px;">
+          <v-btn
+            :to="{ name: 'Home' }"
+            variant="text"
+            :color="$route.name === 'Home' ? 'primary' : 'default'"
+          >
+            <v-icon start>mdi-home</v-icon>
+            صفحه اصلی
+          </v-btn>
+          <v-btn
+            v-if="isUser"
+            :to="{ name: 'Profile' }"
+            variant="text"
+            :color="$route.name === 'Profile' ? 'primary' : 'default'"
+          >
+            <v-icon start>mdi-account</v-icon>
+            پروفایل
+          </v-btn>
+          <v-btn
+            v-if="isDoctor"
+            :to="{ name: 'DoctorPanel' }"
+            variant="text"
+            :color="$route.name === 'DoctorPanel' ? 'primary' : 'default'"
+          >
+            <v-icon start>mdi-view-dashboard</v-icon>
+            پنل پزشک
+          </v-btn>
+        </div>
 
-      <v-btn
-        icon
-        @click="toggleTheme"
-        variant="text"
-        size="small"
-        class="mr-1"
-      >
-        <v-icon size="20">{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-      </v-btn>
+        <v-spacer></v-spacer>
 
-      <v-menu v-if="currentUser" location="bottom">
-        <template v-slot:activator="{ props }">
+        <!-- Actions -->
+        <div class="d-flex align-center" style="gap: 8px;">
           <v-btn
             icon
-            v-bind="props"
             variant="text"
+            @click="toggleTheme"
             size="small"
           >
-            <v-avatar size="32" color="white">
-              <v-icon :color="isDoctor ? 'success' : 'primary'" size="18">
-                {{ isDoctor ? 'mdi-doctor' : 'mdi-account' }}
-              </v-icon>
-            </v-avatar>
+            <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
           </v-btn>
-        </template>
-        <v-list min-width="180">
-          <v-list-item
-            v-if="isUser"
-            prepend-icon="mdi-account"
-            :to="{ name: 'Profile' }"
-          >
-            پروفایل کاربر
-          </v-list-item>
-          <v-list-item
-            v-if="isDoctor"
-            prepend-icon="mdi-view-dashboard"
-            :to="{ name: 'DoctorPanel' }"
-          >
-            پنل پزشک
-          </v-list-item>
-          <v-divider></v-divider>
-          <v-list-item
-            prepend-icon="mdi-logout"
-            @click="logout"
-          >
-            خروج
-          </v-list-item>
-        </v-list>
-      </v-menu>
 
-      <v-btn
-        v-else
-        :to="{ name: 'Login' }"
-        variant="text"
-        size="small"
-        class="text-white mr-1"
-      >
-        <v-icon start size="18">mdi-login</v-icon>
-        <span class="d-none d-sm-inline">ورود</span>
-      </v-btn>
+          <v-menu v-if="currentUser" location="bottom end">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                v-bind="props"
+                variant="text"
+                class="d-flex align-center"
+              >
+                <v-avatar size="32" color="primary">
+                  <v-icon color="white" size="18">
+                    {{ isDoctor ? 'mdi-doctor' : 'mdi-account' }}
+                  </v-icon>
+                </v-avatar>
+                <span class="d-none d-md-inline mr-2 text-body-2">{{ currentUser.name }}</span>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-if="isUser"
+                prepend-icon="mdi-account"
+                :to="{ name: 'Profile' }"
+              >
+                پروفایل کاربر
+              </v-list-item>
+              <v-list-item
+                v-if="isDoctor"
+                prepend-icon="mdi-view-dashboard"
+                :to="{ name: 'DoctorPanel' }"
+              >
+                پنل پزشک
+              </v-list-item>
+              <v-divider class="my-2"></v-divider>
+              <v-list-item prepend-icon="mdi-logout" @click="logout">
+                خروج
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
+          <v-btn
+            v-else
+            :to="{ name: 'Login' }"
+            color="primary"
+            variant="elevated"
+          >
+            <v-icon start>mdi-login</v-icon>
+            <span class="d-none d-sm-inline">ورود</span>
+          </v-btn>
+
+          <v-app-bar-nav-icon
+            v-if="$vuetify.display.mobile"
+            @click="drawer = !drawer"
+          ></v-app-bar-nav-icon>
+        </div>
+      </v-container>
     </v-app-bar>
 
+    <!-- Mobile Drawer -->
     <v-navigation-drawer
       v-model="drawer"
       temporary
       app
-      v-if="$vuetify.display.mobile"
     >
       <v-list>
         <v-list-item
           prepend-icon="mdi-home"
           :to="{ name: 'Home' }"
           title="صفحه اصلی"
+          @click="drawer = false"
         ></v-list-item>
         <v-list-item
-          v-if="user"
+          v-if="isUser"
           prepend-icon="mdi-account"
           :to="{ name: 'Profile' }"
-          title="پروفایل کاربر"
+          title="پروفایل"
+          @click="drawer = false"
         ></v-list-item>
         <v-list-item
-          v-if="doctor"
+          v-if="isDoctor"
           prepend-icon="mdi-view-dashboard"
           :to="{ name: 'DoctorPanel' }"
           title="پنل پزشک"
+          @click="drawer = false"
+        ></v-list-item>
+        <v-divider class="my-2"></v-divider>
+        <v-list-item
+          v-if="currentUser"
+          prepend-icon="mdi-logout"
+          title="خروج"
+          @click="logout"
         ></v-list-item>
       </v-list>
     </v-navigation-drawer>
 
+    <!-- Main Content -->
     <v-main>
       <router-view v-slot="{ Component, route }">
-        <transition
-          name="fade"
-          mode="out-in"
-        >
+        <transition name="fade" mode="out-in">
           <component :is="Component" :key="route.path" />
         </transition>
       </router-view>
     </v-main>
 
-    <!-- Simple Footer -->
-    <v-footer
-      app
-      color="surface"
-      height="56"
-      class="border-t"
-    >
-      <v-container class="py-2">
-        <div class="text-center text-caption text-medium-emphasis">
-          <v-icon size="14" class="mr-1">mdi-copyright</v-icon>
-          {{ new Date().getFullYear() }} سیستم رزرو وقت دکتر
-        </div>
+    <!-- Footer -->
+    <v-footer app color="surface" elevation="2">
+      <v-container>
+        <v-row>
+          <v-col cols="12" md="6">
+            <div class="d-flex align-center mb-2">
+              <v-icon size="20" color="primary" class="ml-2">mdi-hospital</v-icon>
+              <span class="text-subtitle-1 font-weight-bold">سیستم رزرو وقت پزشک</span>
+            </div>
+            <p class="text-body-2 text-medium-emphasis">
+              سامانه آنلاین رزرو نوبت پزشک
+            </p>
+          </v-col>
+          <v-col cols="12" md="6" class="text-left text-md-right">
+            <div class="text-body-2 text-medium-emphasis">
+              <v-icon size="14" class="ml-1">mdi-copyright</v-icon>
+              تمامی حقوق محفوظ است © {{ new Date().getFullYear() }}
+            </div>
+          </v-col>
+        </v-row>
       </v-container>
     </v-footer>
   </v-app>
@@ -161,28 +195,23 @@ export default {
   name: 'App',
   data() {
     return {
-      drawer: false,
-      searchQuery: ''
+      drawer: false
     }
   },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'doctor']),
+    ...mapGetters(['currentUser', 'isDoctor', 'isUser']),
     isDark() {
       return this.$vuetify.theme.current.dark
     }
   },
-  watch: {
-    searchQuery(newVal) {
-      this.$store.commit('setSearchQuery', newVal)
-    }
-  },
   methods: {
-    ...mapMutations(['setUser']),
     toggleTheme() {
       this.$vuetify.theme.global.name = this.isDark ? 'light' : 'dark'
     },
     logout() {
-      this.setUser(null)
+      this.$store.dispatch('logout')
+      this.drawer = false
       this.$router.push({ name: 'Home' })
     }
   }
@@ -190,31 +219,4 @@ export default {
 </script>
 
 <style scoped>
-.border-t {
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.v-theme--dark .border-t {
-  border-top-color: rgba(255, 255, 255, 0.12);
-}
-
-.navbar-search {
-  margin: 0 8px;
-}
-
-.navbar-search :deep(.v-field) {
-  background: rgba(255, 255, 255, 0.15) !important;
-}
-
-.navbar-search :deep(.v-field--focused) {
-  background: rgba(255, 255, 255, 0.25) !important;
-}
-
-.navbar-search :deep(.v-field__input) {
-  color: white;
-}
-
-.navbar-search :deep(.v-field__input::placeholder) {
-  color: rgba(255, 255, 255, 0.7);
-}
 </style>

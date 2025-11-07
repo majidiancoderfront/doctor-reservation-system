@@ -1,71 +1,32 @@
 <template>
   <div class="booking-page">
     <v-container v-if="doctor" class="py-6" style="max-width: 800px">
-      <!-- Back Button -->
-      <v-btn
-        icon
-        variant="text"
-        @click="$router.back()"
-        class="mb-4"
-        color="primary"
-        size="large"
-      >
-        <v-icon size="24">mdi-arrow-right</v-icon>
+      <v-btn icon variant="text" @click="$router.back()" class="mb-4">
+        <v-icon>mdi-arrow-right</v-icon>
       </v-btn>
 
-      <v-card class="clean-card" elevation="2">
-        <v-stepper v-model="step" elevation="0">
-          <v-stepper-header class="pa-4">
-            <v-stepper-item
-              :complete="step > 1"
-              title="انتخاب تاریخ و زمان"
-              value="1"
-            >
-              <template v-slot:icon>
-                <v-icon :color="step >= 1 ? 'primary' : 'grey'">mdi-calendar-clock</v-icon>
-              </template>
-            </v-stepper-item>
+      <v-card elevation="2">
+        <v-stepper v-model="step">
+          <v-stepper-header>
+            <v-stepper-item :complete="step > 1" title="انتخاب تاریخ و زمان" value="1"></v-stepper-item>
             <v-divider></v-divider>
-            <v-stepper-item
-              :complete="step > 2"
-              title="تأیید اطلاعات"
-              value="2"
-            >
-              <template v-slot:icon>
-                <v-icon :color="step >= 2 ? 'primary' : 'grey'">mdi-account-check</v-icon>
-              </template>
-            </v-stepper-item>
+            <v-stepper-item :complete="step > 2" title="تأیید اطلاعات" value="2"></v-stepper-item>
             <v-divider></v-divider>
-            <v-stepper-item
-              title="تأیید نهایی"
-              value="3"
-            >
-              <template v-slot:icon>
-                <v-icon :color="step >= 3 ? 'success' : 'grey'">mdi-check-circle</v-icon>
-              </template>
-            </v-stepper-item>
+            <v-stepper-item title="تأیید نهایی" value="3"></v-stepper-item>
           </v-stepper-header>
 
           <v-stepper-window>
-            <!-- Step 1 -->
             <v-stepper-window-item value="1">
               <v-card-text class="pa-6">
                 <div class="text-center mb-6">
-                  <v-icon color="primary" size="64" class="mb-4">mdi-calendar-clock</v-icon>
                   <h2 class="text-h5 font-weight-bold mb-2">انتخاب تاریخ و زمان</h2>
-                  <div class="d-flex justify-center gap-2 mb-4">
-                    <v-chip color="primary" size="small" variant="flat">
-                      <v-icon start size="16">mdi-doctor</v-icon>
-                      {{ doctor.name }}
-                    </v-chip>
-                    <v-chip color="secondary" size="small" variant="flat">
-                      <v-icon start size="16">mdi-medical-bag</v-icon>
-                      {{ doctor.specialty }}
-                    </v-chip>
+                  <div class="d-flex justify-center" style="gap: 8px;">
+                    <v-chip color="primary" size="small">{{ doctor.name }}</v-chip>
+                    <v-chip color="secondary" size="small">{{ doctor.specialty }}</v-chip>
                   </div>
                 </div>
 
-                <v-card class="mb-4" elevation="0" variant="outlined">
+                <v-card variant="outlined" class="mb-4">
                   <v-date-picker
                     v-model="selectedDate"
                     :min="minDate"
@@ -76,101 +37,63 @@
                 </v-card>
 
                 <div v-if="availableTimes.length > 0" class="mt-4">
-                  <h3 class="text-h6 mb-3">
-                    <v-icon size="20" class="mr-2">mdi-clock-outline</v-icon>
-                    زمان‌های در دسترس:
-                  </h3>
-                  <div class="d-flex flex-wrap gap-2">
+                  <h3 class="text-h6 mb-3">زمان‌های در دسترس:</h3>
+                  <div class="d-flex flex-wrap" style="gap: 8px;">
                     <v-chip
                       v-for="time in availableTimes"
                       :key="time"
-                      :class="['time-chip', { selected: selectedTime === time }]"
+                      :color="selectedTime === time ? 'primary' : 'default'"
                       @click="selectedTime = time"
+                      style="cursor: pointer;"
                     >
-                      <v-icon start size="18">mdi-clock</v-icon>
                       {{ time }}
                     </v-chip>
                   </div>
                 </div>
 
-                <v-alert
-                  v-else-if="selectedDate"
-                  type="info"
-                  variant="tonal"
-                  class="mt-4"
-                  border="start"
-                >
-                  <v-icon start>mdi-information</v-icon>
+                <v-alert v-else-if="selectedDate" type="info" variant="tonal" class="mt-4">
                   برای این تاریخ زمانی در دسترس نیست.
                 </v-alert>
 
                 <v-card-actions class="justify-end mt-6">
-                  <v-btn
-                    color="primary"
-                    variant="elevated"
-                    :disabled="!selectedDate || !selectedTime"
-                    @click="step = 2"
-                    class="clean-btn"
-                    size="large"
-                  >
-                    <v-icon start>mdi-arrow-left</v-icon>
+                  <v-btn color="primary" variant="elevated" :disabled="!selectedDate || !selectedTime" @click="step = 2">
                     ادامه
-                    <v-icon end>mdi-chevron-left</v-icon>
+                    <v-icon end>mdi-arrow-left</v-icon>
                   </v-btn>
                 </v-card-actions>
               </v-card-text>
             </v-stepper-window-item>
 
-            <!-- Step 2 -->
             <v-stepper-window-item value="2">
               <v-card-text class="pa-6">
                 <div class="text-center mb-6">
-                  <v-icon color="primary" size="64" class="mb-4">mdi-account-check</v-icon>
                   <h2 class="text-h5 font-weight-bold mb-2">تأیید اطلاعات</h2>
                 </div>
 
-                <v-card class="mb-4 clean-card" elevation="0" variant="outlined">
-                  <v-card-title class="pa-4">
-                    <v-icon color="primary" class="mr-2">mdi-calendar-text</v-icon>
-                    اطلاعات نوبت
-                  </v-card-title>
+                <v-card variant="outlined" class="mb-4">
+                  <v-card-title class="pa-4">اطلاعات نوبت</v-card-title>
                   <v-card-text class="pa-4 pt-0">
-                    <div class="info-row mb-3">
-                      <v-icon color="primary" class="mr-3">mdi-doctor</v-icon>
-                      <div>
-                        <span class="text-caption text-medium-emphasis">پزشک:</span>
-                        <div class="text-body-1 font-weight-bold">{{ doctor.name }}</div>
-                      </div>
+                    <div class="mb-3">
+                      <span class="text-caption text-medium-emphasis">پزشک:</span>
+                      <div class="font-weight-bold">{{ doctor.name }}</div>
                     </div>
-                    <div class="info-row mb-3">
-                      <v-icon color="primary" class="mr-3">mdi-medical-bag</v-icon>
-                      <div>
-                        <span class="text-caption text-medium-emphasis">تخصص:</span>
-                        <div class="text-body-1 font-weight-bold">{{ doctor.specialty }}</div>
-                      </div>
+                    <div class="mb-3">
+                      <span class="text-caption text-medium-emphasis">تخصص:</span>
+                      <div class="font-weight-bold">{{ doctor.specialty }}</div>
                     </div>
-                    <div class="info-row mb-3">
-                      <v-icon color="primary" class="mr-3">mdi-calendar</v-icon>
-                      <div>
-                        <span class="text-caption text-medium-emphasis">تاریخ:</span>
-                        <div class="text-body-1 font-weight-bold">{{ formatDate(selectedDate) }}</div>
-                      </div>
+                    <div class="mb-3">
+                      <span class="text-caption text-medium-emphasis">تاریخ:</span>
+                      <div class="font-weight-bold">{{ formatDate(selectedDate) }}</div>
                     </div>
-                    <div class="info-row">
-                      <v-icon color="primary" class="mr-3">mdi-clock</v-icon>
-                      <div>
-                        <span class="text-caption text-medium-emphasis">زمان:</span>
-                        <div class="text-body-1 font-weight-bold">{{ selectedTime }}</div>
-                      </div>
+                    <div>
+                      <span class="text-caption text-medium-emphasis">زمان:</span>
+                      <div class="font-weight-bold">{{ selectedTime }}</div>
                     </div>
                   </v-card-text>
                 </v-card>
 
-                <v-card class="mb-4 clean-card" elevation="0" variant="outlined">
-                  <v-card-title class="pa-4">
-                    <v-icon color="primary" class="mr-2">mdi-account</v-icon>
-                    اطلاعات کاربر
-                  </v-card-title>
+                <v-card variant="outlined" class="mb-4">
+                  <v-card-title class="pa-4">اطلاعات کاربر</v-card-title>
                   <v-card-text class="pa-4 pt-0">
                     <v-text-field
                       v-model="userInfo.name"
@@ -199,108 +122,57 @@
                 </v-card>
 
                 <v-card-actions class="justify-space-between">
-                  <v-btn
-                    variant="outlined"
-                    @click="step = 1"
-                    class="clean-btn"
-                    size="large"
-                  >
+                  <v-btn variant="outlined" @click="step = 1">
                     <v-icon start>mdi-arrow-right</v-icon>
                     بازگشت
                   </v-btn>
-                  <v-btn
-                    color="primary"
-                    variant="elevated"
-                    :disabled="!isUserInfoValid"
-                    @click="confirmBooking"
-                    class="clean-btn"
-                    size="large"
-                  >
-                    <v-icon start>mdi-check</v-icon>
+                  <v-btn color="primary" variant="elevated" :disabled="!isUserInfoValid" @click="confirmBooking">
                     تأیید و رزرو
-                    <v-icon end>mdi-calendar-check</v-icon>
+                    <v-icon end>mdi-check</v-icon>
                   </v-btn>
                 </v-card-actions>
               </v-card-text>
             </v-stepper-window-item>
 
-            <!-- Step 3 -->
             <v-stepper-window-item value="3">
               <v-card-text class="pa-6 text-center">
-                <div class="success-icon mb-4">
-                  <v-icon
-                    color="success"
-                    size="100"
-                  >
-                    mdi-check-circle
-                  </v-icon>
-                </div>
+                <v-icon color="success" size="80" class="mb-4">mdi-check-circle</v-icon>
                 <h2 class="text-h4 font-weight-bold mb-4 text-primary">
-                  <v-icon size="32" class="mr-2">mdi-check-circle</v-icon>
                   رزرو با موفقیت انجام شد!
                 </h2>
                 
-                <v-card class="mb-4 clean-card mx-auto" style="max-width: 500px;" elevation="0" variant="outlined">
-                  <v-card-title class="pa-4">
-                    <v-icon color="primary" class="mr-2">mdi-ticket-confirmation</v-icon>
-                    جزئیات نوبت
-                  </v-card-title>
+                <v-card variant="outlined" class="mb-4 mx-auto" style="max-width: 500px;">
+                  <v-card-title class="pa-4">جزئیات نوبت</v-card-title>
                   <v-card-text class="pa-4 pt-0">
-                    <div class="info-row mb-3">
-                      <v-icon color="primary" class="mr-3">mdi-barcode</v-icon>
-                      <div>
-                        <span class="text-caption text-medium-emphasis">کد رزرو:</span>
-                        <div class="text-h6 font-weight-bold text-primary">{{ bookingId }}</div>
-                      </div>
+                    <div class="mb-3">
+                      <span class="text-caption text-medium-emphasis">کد رزرو:</span>
+                      <div class="text-h6 font-weight-bold text-primary">{{ bookingId }}</div>
                     </div>
                     <v-divider class="my-3"></v-divider>
-                    <div class="info-row mb-3">
-                      <v-icon color="primary" class="mr-3">mdi-doctor</v-icon>
-                      <div>
-                        <span class="text-caption text-medium-emphasis">پزشک:</span>
-                        <div class="text-body-1 font-weight-bold">{{ doctor.name }}</div>
-                      </div>
+                    <div class="mb-3">
+                      <span class="text-caption text-medium-emphasis">پزشک:</span>
+                      <div class="font-weight-bold">{{ doctor.name }}</div>
                     </div>
-                    <div class="info-row mb-3">
-                      <v-icon color="primary" class="mr-3">mdi-calendar</v-icon>
-                      <div>
-                        <span class="text-caption text-medium-emphasis">تاریخ:</span>
-                        <div class="text-body-1 font-weight-bold">{{ formatDate(selectedDate) }}</div>
-                      </div>
+                    <div class="mb-3">
+                      <span class="text-caption text-medium-emphasis">تاریخ:</span>
+                      <div class="font-weight-bold">{{ formatDate(selectedDate) }}</div>
                     </div>
-                    <div class="info-row">
-                      <v-icon color="primary" class="mr-3">mdi-clock</v-icon>
-                      <div>
-                        <span class="text-caption text-medium-emphasis">زمان:</span>
-                        <div class="text-body-1 font-weight-bold">{{ selectedTime }}</div>
-                      </div>
+                    <div>
+                      <span class="text-caption text-medium-emphasis">زمان:</span>
+                      <div class="font-weight-bold">{{ selectedTime }}</div>
                     </div>
                   </v-card-text>
                 </v-card>
 
-                <v-alert type="success" variant="tonal" class="mb-4" border="start">
-                  <v-icon start>mdi-information</v-icon>
+                <v-alert type="success" variant="tonal" class="mb-4">
                   لطفاً 15 دقیقه قبل از زمان نوبت در مطب حضور داشته باشید.
                 </v-alert>
 
-                <div class="d-flex justify-center gap-2">
-                  <v-btn
-                    color="primary"
-                    variant="elevated"
-                    @click="goToProfile"
-                    class="clean-btn"
-                    size="large"
-                  >
-                    <v-icon start>mdi-account</v-icon>
+                <div class="d-flex justify-center" style="gap: 8px;">
+                  <v-btn color="primary" variant="elevated" @click="goToProfile">
                     مشاهده پروفایل
                   </v-btn>
-                  <v-btn
-                    variant="outlined"
-                    @click="goToHome"
-                    class="clean-btn"
-                    size="large"
-                  >
-                    <v-icon start>mdi-home</v-icon>
+                  <v-btn variant="outlined" @click="goToHome">
                     بازگشت به صفحه اصلی
                   </v-btn>
                 </div>
@@ -418,27 +290,5 @@ export default {
 <style scoped>
 .booking-page {
   min-height: 100vh;
-}
-
-.info-row {
-  display: flex;
-  align-items: flex-start;
-}
-
-.success-icon {
-  animation: scaleIn 0.5s ease-out;
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-.gap-2 {
-  gap: 8px;
 }
 </style>

@@ -1,15 +1,15 @@
 <template>
   <div class="login-page">
-    <v-container class="py-6">
+    <v-container class="py-8">
       <v-row justify="center" align="center" style="min-height: 80vh">
         <v-col cols="12" sm="10" md="8" lg="6">
-          <!-- Login Type Selection -->
-          <v-card class="clean-card mb-4" elevation="2">
+          <!-- Type Selection -->
+          <v-card class="mb-4" elevation="2">
             <v-card-text class="pa-4">
               <div class="text-center mb-4">
                 <h2 class="text-h5 font-weight-bold mb-2">
-                  <v-icon size="28" class="mr-2">mdi-login</v-icon>
-                  ورود به سیستم
+                  <v-icon size="28" class="ml-2">mdi-account-circle</v-icon>
+                  ورود / ثبت‌نام
                 </h2>
                 <p class="text-body-2 text-medium-emphasis">
                   نوع حساب کاربری خود را انتخاب کنید
@@ -21,36 +21,48 @@
                 mandatory
                 variant="outlined"
                 divided
-                class="w-100 mb-4"
+                class="w-100"
               >
-                <v-btn value="user" class="flex-grow-1" size="large">
-                  <v-icon start size="24">mdi-account</v-icon>
+                <v-btn value="user" class="flex-grow-1">
+                  <v-icon start>mdi-account</v-icon>
                   کاربر
                 </v-btn>
-                <v-btn value="doctor" class="flex-grow-1" size="large">
-                  <v-icon start size="24">mdi-doctor</v-icon>
+                <v-btn value="doctor" class="flex-grow-1">
+                  <v-icon start>mdi-doctor</v-icon>
                   پزشک
                 </v-btn>
               </v-btn-toggle>
             </v-card-text>
           </v-card>
 
-          <!-- User Login Form -->
-          <v-card v-if="loginType === 'user'" class="clean-card" elevation="2">
-            <div class="text-center pa-6 pb-4 login-header">
-              <div class="login-icon-wrapper mb-4">
-                <v-icon color="primary" size="80">mdi-account-circle</v-icon>
-              </div>
-              <h1 class="text-h4 font-weight-bold mb-2">
-                ورود کاربر
+          <!-- User Form -->
+          <v-card v-if="loginType === 'user'" elevation="2">
+            <v-card-title class="text-center pa-6 pb-2">
+              <v-icon size="64" color="primary" class="mb-3">mdi-account-circle</v-icon>
+              <h1 class="text-h5 font-weight-bold">
+                {{ isRegisterMode ? 'ثبت‌نام کاربر' : 'ورود کاربر' }}
               </h1>
-              <p class="text-body-2 text-medium-emphasis">
-                <v-icon size="16" class="mr-1">mdi-information</v-icon>
-                برای رزرو نوبت وارد شوید
-              </p>
-            </div>
+            </v-card-title>
 
-            <v-card-text class="pa-6 pt-0">
+            <v-card-text class="pa-6">
+              <div class="text-center mb-4">
+                <v-btn-toggle
+                  v-model="isRegisterMode"
+                  mandatory
+                  variant="outlined"
+                  density="compact"
+                >
+                  <v-btn :value="false">
+                    <v-icon start>mdi-login</v-icon>
+                    ورود
+                  </v-btn>
+                  <v-btn :value="true">
+                    <v-icon start>mdi-account-plus</v-icon>
+                    ثبت‌نام
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+
               <v-form ref="userForm" v-model="userValid">
                 <v-text-field
                   v-model="userFormData.name"
@@ -78,7 +90,31 @@
                   label="شماره تماس"
                   variant="outlined"
                   prepend-inner-icon="mdi-phone"
-                  :rules="[rules.required]"
+                  :rules="[rules.required, rules.phone]"
+                  class="mb-3"
+                  density="comfortable"
+                ></v-text-field>
+
+                <v-text-field
+                  v-if="isRegisterMode"
+                  v-model="userFormData.password"
+                  label="رمز عبور"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-lock"
+                  type="password"
+                  :rules="isRegisterMode ? [rules.required, rules.password] : []"
+                  class="mb-3"
+                  density="comfortable"
+                ></v-text-field>
+
+                <v-text-field
+                  v-if="isRegisterMode"
+                  v-model="userFormData.confirmPassword"
+                  label="تکرار رمز عبور"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-lock-check"
+                  type="password"
+                  :rules="isRegisterMode ? [rules.required, rules.confirmPassword] : []"
                   class="mb-4"
                   density="comfortable"
                 ></v-text-field>
@@ -89,33 +125,33 @@
                   size="large"
                   block
                   :disabled="!userValid"
-                  @click="loginUser"
-                  class="clean-btn login-submit-btn"
+                  @click="isRegisterMode ? registerUser() : loginUser()"
                 >
-                  <v-icon start size="24">mdi-login</v-icon>
-                  <span class="text-h6 font-weight-bold">ورود</span>
-                  <v-icon end size="20">mdi-arrow-left</v-icon>
+                  <v-icon start>{{ isRegisterMode ? 'mdi-account-plus' : 'mdi-login' }}</v-icon>
+                  {{ isRegisterMode ? 'ثبت‌نام' : 'ورود' }}
                 </v-btn>
+
+                <div class="text-center mt-4">
+                  <v-btn
+                    variant="text"
+                    size="small"
+                    @click="isRegisterMode = !isRegisterMode"
+                  >
+                    {{ isRegisterMode ? 'قبلاً ثبت‌نام کرده‌اید؟ ورود' : 'حساب کاربری ندارید؟ ثبت‌نام' }}
+                  </v-btn>
+                </div>
               </v-form>
             </v-card-text>
           </v-card>
 
-          <!-- Doctor Login Form -->
-          <v-card v-else class="clean-card" elevation="2">
-            <div class="text-center pa-6 pb-4 login-header">
-              <div class="login-icon-wrapper mb-4">
-                <v-icon color="success" size="80">mdi-doctor</v-icon>
-              </div>
-              <h1 class="text-h4 font-weight-bold mb-2">
-                ورود پزشک
-              </h1>
-              <p class="text-body-2 text-medium-emphasis">
-                <v-icon size="16" class="mr-1">mdi-information</v-icon>
-                برای مدیریت نوبت‌ها وارد شوید
-              </p>
-            </div>
+          <!-- Doctor Form -->
+          <v-card v-else elevation="2">
+            <v-card-title class="text-center pa-6 pb-2">
+              <v-icon size="64" color="success" class="mb-3">mdi-doctor</v-icon>
+              <h1 class="text-h5 font-weight-bold">ورود پزشک</h1>
+            </v-card-title>
 
-            <v-card-text class="pa-6 pt-0">
+            <v-card-text class="pa-6">
               <v-form ref="doctorForm" v-model="doctorValid">
                 <v-select
                   v-model="doctorFormData.doctorId"
@@ -168,26 +204,11 @@
                   block
                   :disabled="!doctorValid"
                   @click="loginDoctor"
-                  class="clean-btn login-submit-btn"
                 >
-                  <v-icon start size="24">mdi-login</v-icon>
-                  <span class="text-h6 font-weight-bold">ورود</span>
-                  <v-icon end size="20">mdi-arrow-left</v-icon>
+                  <v-icon start>mdi-login</v-icon>
+                  ورود
                 </v-btn>
               </v-form>
-            </v-card-text>
-          </v-card>
-
-          <!-- Footer Info -->
-          <v-card class="clean-card mt-4" elevation="0" variant="outlined">
-            <v-card-text class="pa-4 text-center">
-              <div class="d-flex align-center justify-center mb-2">
-                <v-icon size="16" color="success" class="mr-1">mdi-shield-check</v-icon>
-                <span class="text-caption text-medium-emphasis">امن و محرمانه</span>
-              </div>
-              <p class="text-caption text-medium-emphasis mb-0">
-                با ورود به سیستم، شما شرایط و قوانین را می‌پذیرید.
-              </p>
             </v-card-text>
           </v-card>
         </v-col>
@@ -204,12 +225,15 @@ export default {
   data() {
     return {
       loginType: 'user',
+      isRegisterMode: false,
       userValid: false,
       doctorValid: false,
       userFormData: {
         name: '',
         email: '',
-        phone: ''
+        phone: '',
+        password: '',
+        confirmPassword: ''
       },
       doctorFormData: {
         doctorId: null,
@@ -223,12 +247,25 @@ export default {
         email: value => {
           const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
           return pattern.test(value) || 'ایمیل معتبر نیست'
+        },
+        phone: value => {
+          const pattern = /^[0-9]{10,11}$/
+          return pattern.test(value?.replace(/[-\s]/g, '')) || 'شماره تماس معتبر نیست'
+        },
+        password: value => {
+          if (!value) return 'رمز عبور الزامی است'
+          if (value.length < 6) return 'رمز عبور باید حداقل 6 کاراکتر باشد'
+          return true
+        },
+        confirmPassword: value => {
+          if (!value) return 'تکرار رمز عبور الزامی است'
+          if (value !== this.userFormData.password) return 'رمز عبور با تکرار آن مطابقت ندارد'
+          return true
         }
       }
     }
   },
   computed: {
-    ...mapGetters(['doctors']),
     doctorsList() {
       return this.$store.state.doctors.map(doc => ({
         name: doc.name,
@@ -248,17 +285,43 @@ export default {
           this.doctorFormData.phone = doctor.phone
         }
       }
+    },
+    isRegisterMode() {
+      this.userFormData.password = ''
+      this.userFormData.confirmPassword = ''
+      if (this.$refs.userForm) {
+        this.$refs.userForm.resetValidation()
+      }
     }
   },
   methods: {
     async loginUser() {
       if (this.$refs.userForm.validate()) {
         try {
-          await this.$store.dispatch('loginUser', this.userFormData)
+          await this.$store.dispatch('loginUser', {
+            name: this.userFormData.name,
+            email: this.userFormData.email,
+            phone: this.userFormData.phone
+          })
           const redirect = this.$route.query.redirect || '/'
           this.$router.push(redirect)
         } catch (error) {
           console.error('Login error:', error)
+        }
+      }
+    },
+    async registerUser() {
+      if (this.$refs.userForm.validate()) {
+        try {
+          await this.$store.dispatch('loginUser', {
+            name: this.userFormData.name,
+            email: this.userFormData.email,
+            phone: this.userFormData.phone
+          })
+          const redirect = this.$route.query.redirect || '/'
+          this.$router.push(redirect)
+        } catch (error) {
+          console.error('Registration error:', error)
         }
       }
     },
@@ -279,29 +342,5 @@ export default {
 <style scoped>
 .login-page {
   min-height: 100vh;
-}
-
-.login-header {
-  background: rgba(25, 118, 210, 0.05);
-  border-radius: 12px 12px 0 0;
-}
-
-.v-theme--dark .login-header {
-  background: rgba(33, 150, 243, 0.1);
-}
-
-.login-icon-wrapper {
-  display: inline-block;
-  padding: 20px;
-  border-radius: 50%;
-  background: rgba(25, 118, 210, 0.1);
-}
-
-.v-theme--dark .login-icon-wrapper {
-  background: rgba(33, 150, 243, 0.2);
-}
-
-.login-submit-btn {
-  height: 56px;
 }
 </style>

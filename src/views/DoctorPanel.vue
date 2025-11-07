@@ -1,69 +1,30 @@
 <template>
   <div class="doctor-panel-page">
     <v-container class="py-6" style="max-width: 1400px">
-      <!-- Header -->
       <div class="text-center mb-8">
-        <v-avatar size="120" color="success" class="mb-4">
-          <v-icon size="64" color="white">mdi-doctor</v-icon>
+        <v-avatar size="100" color="success" class="mb-4">
+          <v-icon size="48" color="white">mdi-doctor</v-icon>
         </v-avatar>
-        <h1 class="text-h4 font-weight-bold mb-2">
-          <v-icon size="32" class="mr-2">mdi-view-dashboard</v-icon>
-          پنل مدیریت پزشک
-        </h1>
-        <p class="text-body-2 text-medium-emphasis">
-          <v-icon size="16" class="mr-1">mdi-account-circle</v-icon>
-          {{ doctor.name }} - {{ doctor.specialty }}
-        </p>
+        <h1 class="text-h4 font-weight-bold mb-2">پنل مدیریت پزشک</h1>
+        <p class="text-body-2 text-medium-emphasis">{{ doctor.name }} - {{ doctor.specialty }}</p>
       </div>
 
       <v-row>
-        <!-- Sidebar -->
         <v-col cols="12" md="3">
-          <v-card class="clean-card mb-4" elevation="2">
-            <v-card-title class="pa-4">
-              <v-icon color="success" class="mr-2">mdi-menu</v-icon>
-              منو
-            </v-card-title>
+          <v-card elevation="2" class="mb-4">
+            <v-card-title class="pa-4">منو</v-card-title>
             <v-list>
-              <v-list-item
-                prepend-icon="mdi-view-dashboard"
-                title="داشبورد"
-                :active="activeTab === 'dashboard'"
-                @click="activeTab = 'dashboard'"
-              ></v-list-item>
-              <v-list-item
-                prepend-icon="mdi-calendar-clock"
-                title="نوبت‌ها"
-                :active="activeTab === 'appointments'"
-                @click="activeTab = 'appointments'"
-              ></v-list-item>
-              <v-list-item
-                prepend-icon="mdi-clock-outline"
-                title="مدیریت زمان‌ها"
-                :active="activeTab === 'slots'"
-                @click="activeTab = 'slots'"
-              ></v-list-item>
-              <v-list-item
-                prepend-icon="mdi-comment-text"
-                title="نظرات"
-                :active="activeTab === 'reviews'"
-                @click="activeTab = 'reviews'"
-              ></v-list-item>
+              <v-list-item prepend-icon="mdi-view-dashboard" title="داشبورد" :active="activeTab === 'dashboard'" @click="activeTab = 'dashboard'"></v-list-item>
+              <v-list-item prepend-icon="mdi-calendar-clock" title="نوبت‌ها" :active="activeTab === 'appointments'" @click="activeTab = 'appointments'"></v-list-item>
+              <v-list-item prepend-icon="mdi-clock-outline" title="مدیریت زمان‌ها" :active="activeTab === 'slots'" @click="activeTab = 'slots'"></v-list-item>
+              <v-list-item prepend-icon="mdi-comment-text" title="نظرات" :active="activeTab === 'reviews'" @click="activeTab = 'reviews'"></v-list-item>
               <v-divider class="my-2"></v-divider>
-              <v-list-item
-                prepend-icon="mdi-logout"
-                title="خروج"
-                @click="logout"
-              ></v-list-item>
+              <v-list-item prepend-icon="mdi-logout" title="خروج" @click="logout"></v-list-item>
             </v-list>
           </v-card>
 
-          <!-- Stats -->
-          <v-card class="clean-card" elevation="2">
-            <v-card-title class="pa-4">
-              <v-icon color="success" class="mr-2">mdi-chart-box</v-icon>
-              آمار
-            </v-card-title>
+          <v-card elevation="2">
+            <v-card-title class="pa-4">آمار</v-card-title>
             <v-card-text class="pa-4">
               <div class="text-center mb-4">
                 <v-icon size="40" color="primary" class="mb-2">mdi-calendar-check</v-icon>
@@ -86,14 +47,9 @@
           </v-card>
         </v-col>
 
-        <!-- Main Content -->
         <v-col cols="12" md="9">
-          <!-- Dashboard -->
-          <v-card v-if="activeTab === 'dashboard'" class="clean-card mb-4" elevation="2">
-            <v-card-title class="pa-4">
-              <v-icon color="success" size="24" class="mr-2">mdi-view-dashboard</v-icon>
-              داشبورد
-            </v-card-title>
+          <v-card v-if="activeTab === 'dashboard'" elevation="2" class="mb-4">
+            <v-card-title class="pa-4">داشبورد</v-card-title>
             <v-card-text class="pa-6">
               <v-row>
                 <v-col cols="12" md="6">
@@ -116,79 +72,44 @@
             </v-card-text>
           </v-card>
 
-          <!-- Appointments -->
-          <v-card v-if="activeTab === 'appointments'" class="clean-card mb-4" elevation="2">
-            <v-card-title class="pa-4">
-              <v-icon color="success" size="24" class="mr-2">mdi-calendar-clock</v-icon>
-              نوبت‌های رزرو شده
-            </v-card-title>
+          <v-card v-if="activeTab === 'appointments'" elevation="2" class="mb-4">
+            <v-card-title class="pa-4">نوبت‌های رزرو شده</v-card-title>
             <v-card-text class="pa-4">
               <div v-if="doctorAppointments.length > 0">
-                <v-card
-                  v-for="appointment in doctorAppointments"
-                  :key="appointment.id"
-                  class="appointment-card mb-3"
-                  elevation="0"
-                  variant="outlined"
-                >
+                <v-card v-for="appointment in doctorAppointments" :key="appointment.id" variant="outlined" class="mb-3">
                   <v-card-text class="pa-4">
                     <div class="d-flex align-start">
-                      <v-avatar color="success" size="56" class="mr-3">
-                        <v-icon color="white" size="28">mdi-account</v-icon>
+                      <v-avatar color="success" size="48" class="ml-3">
+                        <v-icon color="white">mdi-account</v-icon>
                       </v-avatar>
                       <div class="flex-grow-1">
                         <div class="d-flex align-center justify-space-between mb-2">
-                          <div class="d-flex align-center">
-                            <v-icon size="20" color="primary" class="mr-2">mdi-account-circle</v-icon>
-                            <h3 class="text-h6 font-weight-bold mb-0">
-                              {{ appointment.userName }}
-                            </h3>
-                          </div>
-                          <v-chip
-                            :color="getStatusColor(appointment.status)"
-                            size="small"
-                            variant="flat"
-                          >
-                            <v-icon start size="14">{{ getStatusIcon(appointment.status) }}</v-icon>
+                          <h3 class="text-h6 font-weight-bold mb-0">{{ appointment.userName }}</h3>
+                          <v-chip :color="getStatusColor(appointment.status)" size="small" variant="flat">
                             {{ getStatusText(appointment.status) }}
                           </v-chip>
                         </div>
-                        <div class="d-flex flex-wrap align-center gap-2 mb-2">
+                        <div class="d-flex flex-wrap align-center mb-2" style="gap: 8px;">
                           <span class="text-body-2">
-                            <v-icon size="14" color="primary" class="mr-1">mdi-calendar</v-icon>
+                            <v-icon size="14" class="ml-1">mdi-calendar</v-icon>
                             {{ formatDate(appointment.date) }}
                           </span>
                           <span class="text-body-2">
-                            <v-icon size="14" color="primary" class="mr-1">mdi-clock</v-icon>
+                            <v-icon size="14" class="ml-1">mdi-clock</v-icon>
                             {{ appointment.time }}
                           </span>
                           <span class="text-body-2">
-                            <v-icon size="14" color="primary" class="mr-1">mdi-phone</v-icon>
+                            <v-icon size="14" class="ml-1">mdi-phone</v-icon>
                             {{ appointment.userPhone }}
                           </span>
                         </div>
-                        <div class="text-caption text-medium-emphasis mb-2">
-                          <v-icon size="12" class="mr-1">mdi-barcode</v-icon>
-                          کد رزرو: {{ appointment.id }}
-                        </div>
-                        <div class="d-flex gap-2">
-                          <v-btn
-                            v-if="appointment.status === 'pending'"
-                            color="success"
-                            size="small"
-                            variant="flat"
-                            @click="updateAppointmentStatus(appointment.id, 'confirmed')"
-                          >
+                        <div class="text-caption text-medium-emphasis mb-2">کد رزرو: {{ appointment.id }}</div>
+                        <div class="d-flex" style="gap: 8px;">
+                          <v-btn v-if="appointment.status === 'pending'" color="success" size="small" variant="flat" @click="updateAppointmentStatus(appointment.id, 'confirmed')">
                             <v-icon start size="16">mdi-check</v-icon>
                             تأیید
                           </v-btn>
-                          <v-btn
-                            v-if="appointment.status !== 'cancelled'"
-                            color="error"
-                            size="small"
-                            variant="outlined"
-                            @click="updateAppointmentStatus(appointment.id, 'cancelled')"
-                          >
+                          <v-btn v-if="appointment.status !== 'cancelled'" color="error" size="small" variant="outlined" @click="updateAppointmentStatus(appointment.id, 'cancelled')">
                             <v-icon start size="16">mdi-close</v-icon>
                             لغو
                           </v-btn>
@@ -198,42 +119,23 @@
                   </v-card-text>
                 </v-card>
               </div>
-              <v-alert
-                v-else
-                type="info"
-                variant="tonal"
-                class="text-center"
-                border="start"
-              >
+              <v-alert v-else type="info" variant="tonal" class="text-center">
                 <v-icon size="48" class="mb-2">mdi-calendar-question</v-icon>
                 <div class="text-h6 mb-2">هنوز نوبتی ثبت نشده است</div>
               </v-alert>
             </v-card-text>
           </v-card>
 
-          <!-- Manage Slots -->
-          <v-card v-if="activeTab === 'slots'" class="clean-card mb-4" elevation="2">
-            <v-card-title class="pa-4">
-              <v-icon color="success" size="24" class="mr-2">mdi-clock-outline</v-icon>
-              مدیریت زمان‌های در دسترس
-            </v-card-title>
+          <v-card v-if="activeTab === 'slots'" elevation="2" class="mb-4">
+            <v-card-title class="pa-4">مدیریت زمان‌های در دسترس</v-card-title>
             <v-card-text class="pa-6">
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-date-picker
-                    v-model="newSlotDate"
-                    :min="minDate"
-                    :max="maxDate"
-                    locale="fa"
-                    class="mb-4"
-                  ></v-date-picker>
+                  <v-date-picker v-model="newSlotDate" :min="minDate" :max="maxDate" locale="fa" class="mb-4"></v-date-picker>
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-card variant="outlined" class="pa-4">
-                    <h3 class="text-h6 mb-4">
-                      <v-icon class="mr-2">mdi-clock-plus</v-icon>
-                      افزودن زمان
-                    </h3>
+                    <h3 class="text-h6 mb-4">افزودن زمان</h3>
                     <v-text-field
                       v-model="newSlotTime"
                       label="زمان (مثال: 09:00)"
@@ -243,13 +145,7 @@
                       class="mb-3"
                       density="comfortable"
                     ></v-text-field>
-                    <v-btn
-                      color="success"
-                      variant="elevated"
-                      block
-                      @click="addTimeSlot"
-                      :disabled="!newSlotDate || !newSlotTime"
-                    >
+                    <v-btn color="success" variant="elevated" block @click="addTimeSlot" :disabled="!newSlotDate || !newSlotTime">
                       <v-icon start>mdi-plus</v-icon>
                       افزودن زمان
                     </v-btn>
@@ -259,42 +155,19 @@
 
               <v-divider class="my-6"></v-divider>
 
-              <h3 class="text-h6 mb-4">
-                <v-icon class="mr-2">mdi-calendar-list</v-icon>
-                زمان‌های ثبت شده
-              </h3>
-              <v-card
-                v-for="(slot, index) in currentDoctorSlots"
-                :key="index"
-                variant="outlined"
-                class="mb-3"
-              >
+              <h3 class="text-h6 mb-4">زمان‌های ثبت شده</h3>
+              <v-card v-for="(slot, index) in currentDoctorSlots" :key="index" variant="outlined" class="mb-3">
                 <v-card-text class="pa-4">
                   <div class="d-flex align-center justify-space-between">
                     <div>
-                      <div class="text-h6 font-weight-bold mb-2">
-                        <v-icon size="20" class="mr-2">mdi-calendar</v-icon>
-                        {{ formatDate(slot.date) }}
-                      </div>
-                      <div class="d-flex flex-wrap gap-2">
-                        <v-chip
-                          v-for="time in slot.times"
-                          :key="time"
-                          color="success"
-                          size="small"
-                          variant="flat"
-                        >
-                          <v-icon start size="14">mdi-clock</v-icon>
+                      <div class="text-h6 font-weight-bold mb-2">{{ formatDate(slot.date) }}</div>
+                      <div class="d-flex flex-wrap" style="gap: 8px;">
+                        <v-chip v-for="time in slot.times" :key="time" color="success" size="small" variant="flat">
                           {{ time }}
                         </v-chip>
                       </div>
                     </div>
-                    <v-btn
-                      icon
-                      color="error"
-                      variant="text"
-                      @click="removeSlot(index)"
-                    >
+                    <v-btn icon color="error" variant="text" @click="removeSlot(index)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -303,38 +176,20 @@
             </v-card-text>
           </v-card>
 
-          <!-- Reviews -->
-          <v-card v-if="activeTab === 'reviews'" class="clean-card mb-4" elevation="2">
-            <v-card-title class="pa-4">
-              <v-icon color="success" size="24" class="mr-2">mdi-comment-text-multiple</v-icon>
-              نظرات بیماران
-            </v-card-title>
+          <v-card v-if="activeTab === 'reviews'" elevation="2" class="mb-4">
+            <v-card-title class="pa-4">نظرات بیماران</v-card-title>
             <v-card-text class="pa-4">
-              <div
-                v-for="review in currentDoctorReviews"
-                :key="review.id"
-                class="review-item mb-4 pb-4"
-              >
+              <div v-for="review in currentDoctorReviews" :key="review.id" class="mb-4 pb-4" style="border-bottom: 1px solid rgba(0,0,0,0.12);">
                 <div class="d-flex align-start">
-                  <v-avatar color="success" size="48" class="mr-3">
-                    <v-icon color="white" size="24">mdi-account</v-icon>
+                  <v-avatar color="success" size="40" class="ml-3">
+                    <span class="text-white">{{ review.user.charAt(0) }}</span>
                   </v-avatar>
                   <div class="flex-grow-1">
                     <div class="d-flex align-center mb-2">
-                      <v-icon size="18" color="primary" class="mr-2">mdi-account-circle</v-icon>
-                      <span class="text-body-1 font-weight-bold mr-2">{{ review.user }}</span>
-                      <v-rating
-                        :model-value="review.rating"
-                        color="amber"
-                        density="compact"
-                        size="small"
-                        readonly
-                      ></v-rating>
+                      <span class="font-weight-bold mr-2">{{ review.user }}</span>
+                      <v-rating :model-value="review.rating" color="amber" density="compact" size="small" readonly></v-rating>
                     </div>
-                    <div class="d-flex align-start">
-                      <v-icon size="16" color="grey" class="mr-2 mt-1">mdi-format-quote-close</v-icon>
-                      <p class="text-body-2 mb-0">{{ review.comment }}</p>
-                    </div>
+                    <p class="text-body-2 mb-0">{{ review.comment }}</p>
                   </div>
                 </div>
               </div>
@@ -425,15 +280,6 @@ export default {
       }
       return colors[status] || 'default'
     },
-    getStatusIcon(status) {
-      const icons = {
-        confirmed: 'mdi-check-circle',
-        pending: 'mdi-clock-outline',
-        cancelled: 'mdi-close-circle',
-        completed: 'mdi-check-all'
-      }
-      return icons[status] || 'mdi-help-circle'
-    },
     getStatusText(status) {
       const texts = {
         confirmed: 'تأیید شده',
@@ -493,34 +339,4 @@ export default {
 .doctor-panel-page {
   min-height: 100vh;
 }
-
-.review-item {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.v-theme--dark .review-item {
-  border-bottom-color: rgba(255, 255, 255, 0.12);
-}
-
-.review-item:last-child {
-  border-bottom: none;
-}
-
-.appointment-card {
-  transition: all 0.2s ease;
-}
-
-.appointment-card:hover {
-  border-color: #4CAF50;
-  background: rgba(76, 175, 80, 0.02);
-}
-
-.v-theme--dark .appointment-card:hover {
-  background: rgba(76, 175, 80, 0.1);
-}
-
-.gap-2 {
-  gap: 8px;
-}
 </style>
-
