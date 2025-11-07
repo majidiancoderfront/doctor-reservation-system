@@ -5,6 +5,7 @@ import DoctorDetails from '@/views/DoctorDetails.vue'
 import Booking from '@/views/Booking.vue'
 import Profile from '@/views/Profile.vue'
 import Login from '@/views/Login.vue'
+import DoctorPanel from '@/views/DoctorPanel.vue'
 
 const routes = [
   {
@@ -23,13 +24,19 @@ const routes = [
     name: 'Booking',
     component: Booking,
     props: true,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresUser: true }
   },
   {
     path: '/profile',
     name: 'Profile',
     component: Profile,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresUser: true }
+  },
+  {
+    path: '/doctor-panel',
+    name: 'DoctorPanel',
+    component: DoctorPanel,
+    meta: { requiresAuth: true, requiresDoctor: true }
   },
   {
     path: '/login',
@@ -44,8 +51,16 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !store.state.user) {
+  const currentUser = store.getters.currentUser
+  const isDoctor = store.getters.isDoctor
+  const isUser = store.getters.isUser
+
+  if (to.meta.requiresAuth && !currentUser) {
     next({ name: 'Login', query: { redirect: to.fullPath } })
+  } else if (to.meta.requiresUser && !isUser) {
+    next({ name: 'Home' })
+  } else if (to.meta.requiresDoctor && !isDoctor) {
+    next({ name: 'Home' })
   } else {
     next()
   }

@@ -47,7 +47,7 @@
         <v-icon size="20">{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
       </v-btn>
 
-      <v-menu v-if="user" location="bottom">
+      <v-menu v-if="currentUser" location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn
             icon
@@ -56,16 +56,26 @@
             size="small"
           >
             <v-avatar size="32" color="white">
-              <v-icon color="primary" size="18">mdi-account</v-icon>
+              <v-icon :color="isDoctor ? 'success' : 'primary'" size="18">
+                {{ isDoctor ? 'mdi-doctor' : 'mdi-account' }}
+              </v-icon>
             </v-avatar>
           </v-btn>
         </template>
         <v-list min-width="180">
           <v-list-item
+            v-if="isUser"
             prepend-icon="mdi-account"
             :to="{ name: 'Profile' }"
           >
-            پروفایل
+            پروفایل کاربر
+          </v-list-item>
+          <v-list-item
+            v-if="isDoctor"
+            prepend-icon="mdi-view-dashboard"
+            :to="{ name: 'DoctorPanel' }"
+          >
+            پنل پزشک
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item
@@ -105,7 +115,13 @@
           v-if="user"
           prepend-icon="mdi-account"
           :to="{ name: 'Profile' }"
-          title="پروفایل"
+          title="پروفایل کاربر"
+        ></v-list-item>
+        <v-list-item
+          v-if="doctor"
+          prepend-icon="mdi-view-dashboard"
+          :to="{ name: 'DoctorPanel' }"
+          title="پنل پزشک"
         ></v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -139,7 +155,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'App',
