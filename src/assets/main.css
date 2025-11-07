@@ -8,6 +8,12 @@ body {
   font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-weight: 400;
+}
+
+.v-application {
+  transition: background-color 0.3s ease !important;
+  font-family: 'Vazir', sans-serif !important;
 }
 
 .v-application {
