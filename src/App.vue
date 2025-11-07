@@ -1,10 +1,12 @@
 <template>
   <v-app>
+    <!-- Enhanced Header with Search -->
     <v-app-bar
       app
       color="primary"
       dark
       elevation="2"
+      height="72"
     >
       <v-app-bar-nav-icon
         v-if="$vuetify.display.mobile"
@@ -12,38 +14,60 @@
       ></v-app-bar-nav-icon>
       
       <v-toolbar-title class="d-flex align-center">
-        <i class="fas fa-user-doctor mr-2"></i>
-        سیستم رزرو وقت دکتر
+        <v-icon size="28" class="mr-2">mdi-doctor</v-icon>
+        <span class="text-body-1 font-weight-medium d-none d-sm-inline">سیستم رزرو وقت دکتر</span>
+        <span class="text-body-2 d-sm-none">رزرو وقت</span>
       </v-toolbar-title>
 
+      <!-- Search Bar in Navbar -->
       <v-spacer></v-spacer>
+      <div class="d-none d-md-flex align-center" style="max-width: 400px; width: 100%;">
+        <v-text-field
+          v-model="searchQuery"
+          prepend-inner-icon="mdi-magnify"
+          placeholder="پزشک یا تخصص را جستجو کنید..."
+          variant="solo-filled"
+          density="compact"
+          hide-details
+          clearable
+          flat
+          class="navbar-search"
+        ></v-text-field>
+      </div>
+
+      <v-spacer v-if="!$vuetify.display.mdAndUp"></v-spacer>
 
       <v-btn
         icon
         @click="toggleTheme"
-        class="mr-2"
+        variant="text"
+        size="small"
+        class="mr-1"
       >
-        <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+        <v-icon size="20">{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
       </v-btn>
 
-      <v-menu v-if="user">
+      <v-menu v-if="user" location="bottom">
         <template v-slot:activator="{ props }">
           <v-btn
             icon
             v-bind="props"
+            variant="text"
+            size="small"
           >
-            <v-avatar size="32">
-              <v-icon>mdi-account</v-icon>
+            <v-avatar size="32" color="white">
+              <v-icon color="primary" size="18">mdi-account</v-icon>
             </v-avatar>
           </v-btn>
         </template>
-        <v-list>
+        <v-list min-width="180">
           <v-list-item
             prepend-icon="mdi-account"
             :to="{ name: 'Profile' }"
           >
             پروفایل
           </v-list-item>
+          <v-divider></v-divider>
           <v-list-item
             prepend-icon="mdi-logout"
             @click="logout"
@@ -57,8 +81,11 @@
         v-else
         :to="{ name: 'Login' }"
         variant="text"
+        size="small"
+        class="text-white mr-1"
       >
-        ورود
+        <v-icon start size="18">mdi-login</v-icon>
+        <span class="d-none d-sm-inline">ورود</span>
       </v-btn>
     </v-app-bar>
 
@@ -94,32 +121,43 @@
       </router-view>
     </v-main>
 
+    <!-- Simple Footer -->
     <v-footer
       app
-      color="primary"
-      dark
+      color="surface"
+      height="56"
+      class="border-t"
     >
-      <v-spacer></v-spacer>
-      <div>&copy; {{ new Date().getFullYear() }} سیستم رزرو وقت دکتر</div>
+      <v-container class="py-2">
+        <div class="text-center text-caption text-medium-emphasis">
+          <v-icon size="14" class="mr-1">mdi-copyright</v-icon>
+          {{ new Date().getFullYear() }} سیستم رزرو وقت دکتر
+        </div>
+      </v-container>
     </v-footer>
   </v-app>
 </template>
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { useTheme } from 'vuetify'
 
 export default {
   name: 'App',
   data() {
     return {
       drawer: false,
+      searchQuery: ''
     }
   },
   computed: {
     ...mapState(['user']),
     isDark() {
       return this.$vuetify.theme.current.dark
+    }
+  },
+  watch: {
+    searchQuery(newVal) {
+      this.$store.commit('setSearchQuery', newVal)
     }
   },
   methods: {
@@ -136,8 +174,31 @@ export default {
 </script>
 
 <style scoped>
-.v-toolbar-title {
-  font-weight: 600;
+.border-t {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.v-theme--dark .border-t {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+.navbar-search {
+  margin: 0 8px;
+}
+
+.navbar-search :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.navbar-search :deep(.v-field--focused) {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.navbar-search :deep(.v-field__input) {
+  color: white;
+}
+
+.navbar-search :deep(.v-field__input::placeholder) {
+  color: rgba(255, 255, 255, 0.7);
 }
 </style>
-

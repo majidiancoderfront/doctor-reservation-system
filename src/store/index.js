@@ -3,6 +3,7 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     user: null,
+    searchQuery: '',
     doctors: [
       {
         id: 1,
@@ -88,6 +89,9 @@ export default createStore({
   mutations: {
     setUser(state, user) {
       state.user = user
+    },
+    setSearchQuery(state, query) {
+      state.searchQuery = query
     },
     addAppointment(state, appointment) {
       state.appointments.push(appointment)
